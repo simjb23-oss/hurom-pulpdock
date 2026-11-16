@@ -4,8 +4,8 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 // 휴롬 펄프 도크(가칭) · 구조 3D v1 첫판 (2026-11-16, 두팔 msg_948835bd 지시 · 준보 「시작해볼까」)
 //   원액기 배출구 → 실리콘 깔때기(끼움식) → 도크 투입구. 도크 안: 펴 주는 날개(천천히) → 열판·바람·휘젓기로 말리기(약 55°C) → 분쇄날(빨리)로 가루.
-//   흰 몸체 · 앞 윗면 버튼 1 + 불빛 3 · 앱 없음. 치수는 두팔이 채울 「추정 예정」이라 3D는 가정 치수(바깥 20 × 23 × 11cm, 건조통 Ø16 × 깊이 7cm ≈ 1.4L). 단위 10cm.
-//   원액기는 자리 설명용 간략 모형(휴롬 세로형 원액기의 비례만). 쿼리: ?p=0~1 진행도 · ?c=white|graphite|black · ?ang=<도> · ?cy= · ?nojuicer ?nopulp ?nojar ?noairg ?noadapter
+//   흰 몸체 · 앞 윗면 버튼 1 + 불빛 3 · 앱 없음. 치수는 두팔 추정(2026-11-16)으로 3D 치수를 그대로 둠(바깥 20 × 23 × 11cm, 건조통 Ø16 × 깊이 7cm ≈ 1.4L). 단위 10cm.
+//   원액기는 자리 설명용 간략 모형(휴롬 세로형 원액기의 비례만). 쿼리: ?p=0~1 진행도 · ?c=white|graphite|black · ?ang=<도> · ?cy= · ?nojuicer ?nopulp ?nojar ?noairg ?nocord
 const sec = document.getElementById('structure');
 const canvas = document.getElementById('xv-canvas');
 const labelLayer = document.getElementById('xv-labels');
@@ -221,7 +221,7 @@ const SPOUT_END = new THREE.Vector3(JX + 1.18, 1.66, -0.1);   // = (-0.67, 1.66,
   const ptc = new THREE.Mesh(new THREE.TorusGeometry(0.45, 0.05, 12, 64), M.dark); ptc.rotation.x = Math.PI / 2; ptc.position.y = -0.07; g.add(ptc);   // PTC 히터 링
   const ring = new THREE.Mesh(new THREE.TorusGeometry(0.15, 0.015, 8, 32), M.dark); ring.rotation.x = Math.PI / 2; ring.position.y = 0; g.add(ring);
   g.position.set(0, BASE, BZ);
-  part('열판 · 알루미늄 원판 + PTC 히터 · 약 55°C · 과열 차단 NTC', g, [-0.8, 0.7, 1.4], new THREE.Vector3(-0.7, -0.05, 0.2), true);
+  part('열판 · 알루미늄 원판 + PTC 히터 150W · 약 55°C · 과열 차단 NTC', g, [-0.8, 0.7, 1.4], new THREE.Vector3(-0.7, -0.05, 0.2), true);
 }
 /* 9. 자석 커플링 + 모터 — 아래 칸 가운데. 통 바닥을 뚫지 않고 자석으로 축을 돌림(천천히·빨리 두 속도). 물·가루가 모터로 못 들어감 */
 {
@@ -285,13 +285,14 @@ function fan(size = 0.4) {
   [[-0.85, -1.0], [0.85, -1.0], [-0.85, 1.0], [0.85, 1.0]].forEach(([x, z]) => { const f = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.03, 20), M.rubber); f.position.set(x, -0.015, z); g.add(f); });
   part('바닥 · 고무발 4', g, [0, -1.5, 0], new THREE.Vector3(-0.85, 0, 1.0), true);
 }
-/* 15. 어댑터 — 바깥 기성품(전압·W는 추정 예정). 선은 오른쪽 옆 홈으로 */
+/* 15. 전원선 — 220V 직결(내장 전원, 어댑터 없음 · 최대 약 200W). 선은 오른쪽 옆 홈으로, 끝에 플러그 */
 {
   const g = new THREE.Group();
-  const brick = new THREE.Mesh(new RoundedBoxGeometry(0.8, 0.26, 0.4, 2, 0.04), M.dark); brick.position.set(1.9, 0.13, -1.7); g.add(brick);
-  g.add(tube([new THREE.Vector3(1.5, 0.13, -1.7), new THREE.Vector3(1.25, 0.1, -1.2), new THREE.Vector3(W / 2 + 0.02, 0.15, -0.6)], 0.013, M.wireB, 30));
-  g.name = 'adapter';
-  part('외장 어댑터 · 기성품(전압·W 추정 예정) · 선은 옆 홈으로', g, [1.2, -0.4, -0.8], new THREE.Vector3(1.9, 0.28, -1.7));
+  g.add(tube([new THREE.Vector3(W / 2 + 0.02, 0.15, -0.6), new THREE.Vector3(1.25, 0.1, -1.0), new THREE.Vector3(1.6, 0.06, -1.5), new THREE.Vector3(2.0, 0.05, -1.75)], 0.016, M.wireB, 40));
+  const plug = new THREE.Mesh(new RoundedBoxGeometry(0.34, 0.14, 0.22, 2, 0.04), M.dark); plug.position.set(2.15, 0.07, -1.78); plug.rotation.y = -0.35; g.add(plug);
+  [[-0.06], [0.06]].forEach(([dz]) => { const pin = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.14, 10), M.alu); pin.rotation.z = Math.PI / 2; pin.position.set(2.38, 0.07, -1.78 + dz - 0.08); pin.rotation.y = -0.35; g.add(pin); });
+  g.name = 'cord';
+  part('전원선 · 220V 직결(내장 전원, 최대 약 200W) · 어댑터 없음 · 선은 옆 홈으로', g, [1.2, -0.4, -0.8], new THREE.Vector3(2.1, 0.22, -1.78));
 }
 /* 공기 흐름(설명용) — 뒷면 아래 슬롯 → 열판 둘레 → 뒤 벽 길 → 건조통 뒤 망 창 → 찌꺼기 위 → 뚜껑 뒤 슬롯(습기) */
 const airG = new THREE.Group(); airG.name = 'airg'; product.add(airG);
@@ -318,7 +319,7 @@ ground.position.y = -0.9 - 0.001;
 
 /* ---------- 스크롤 ---------- */
 const Q = new URLSearchParams(location.search);
-product.traverse(o => { if (o.name && Q.has('no' + o.name)) o.visible = false; });   // 디버그: ?nojuicer ?nopulp ?nojar ?noairg ?noadapter ?nofunnel
+product.traverse(o => { if (o.name && Q.has('no' + o.name)) o.visible = false; });   // 디버그: ?nojuicer ?nopulp ?nojar ?noairg ?nocord ?nofunnel
 const CY = +(Q.get('cy') || 0);
 const ANG = Q.has('ang') ? +Q.get('ang') * Math.PI / 180 : null;   // 카메라 각도 고정(도) — 최종 이미지용
 const NOAIR = Q.has('noair');
